@@ -1,0 +1,35 @@
+server {
+        listen 80;
+        server_name SUBDOMAIN.jeremiah.onlyirul.com www.SUBDOMAIN.jeremiah.onlyirul.com;
+
+        root /var/www/prod/SUBDOMAIN.jeremiah.onlyirul.com/public_html;
+        index index.html index.php;
+
+        add_header X-Powered-By WowrackOptimizedX1;
+
+        access_log /var/log/nginx/SUBDOMAIN.access.log;
+        error_log  /var/log/nginx/SUBDOMAIN.error.log warn;
+
+        # set expiration of assets to MAX for caching
+        location ~* \.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|css|rss|atom|js|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
+            expires 1y;
+            log_not_found off;
+        }
+
+        location / {
+            try_files $uri $uri/ /index.php?$args;
+        }
+
+        location ~* \.php$ {
+            fastcgi_param CI_ENV production;
+            fastcgi_pass 127.0.0.1:9000;
+            include fastcgi.conf;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param HTTPS "on";
+        }
+
+        location ~ /\.ht {
+            deny all;
+            return 404;
+        }
+}
